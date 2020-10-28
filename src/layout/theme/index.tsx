@@ -3,7 +3,9 @@ import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
   body {
-    background: black;
+    background: white;
+    font-family: sans-serif;
+    text-align: center;
   }
 `;
 
