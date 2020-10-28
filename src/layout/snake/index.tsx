@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useCanvas } from "../../hooks/useCanvas";
+import { useGameLoop } from "../../hooks/useGameLoop";
 
 import { getDirectionFromKeyEvent } from "../../utils/dom";
 
@@ -77,12 +78,7 @@ export const Snake = () => {
         }
     }, [contextRef, directionRef, positionRef, canvasRef]);
 
-    useEffect(() => {
-        gameLoop.current = setInterval(render, 100);
-        return () => {
-            clearInterval(gameLoop.current);
-        };
-    }, [render]);
+    useGameLoop(render, gameOver);
 
     useEffect(() => {
         const onKeyDown = (event: KeyboardEvent) => {
@@ -96,12 +92,6 @@ export const Snake = () => {
             document.removeEventListener("keydown", onKeyDown);
         };
     }, []);
-
-    useEffect(() => {
-        if (gameOver) {
-            clearInterval(gameLoop.current);
-        }
-    }, [gameOver]);
 
     return gameOver ? (
         <h1>Game Over</h1>
