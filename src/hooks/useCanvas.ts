@@ -10,7 +10,7 @@ export interface CanvasOptions {
 }
 
 export const useCanvas = () => {
-    const canvasRef = useRef(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef(null);
 
     useEffect(() => {

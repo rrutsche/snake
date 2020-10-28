@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useCanvas } from "../../hooks/useCanvas";
 
@@ -36,6 +36,7 @@ export const Snake = () => {
 
     const render = useCallback(() => {
         const direction = directionRef.current;
+        const canvas = canvasRef.current;
         const position = positionRef.current;
         const isHorizontal = direction === "right" || direction === "left";
         const x = isHorizontal
@@ -46,6 +47,14 @@ export const Snake = () => {
             : position.y;
 
         positionRef.current = { x, y };
+        const outOfBounds =
+            x > canvas.width - GRID_SIZE ||
+            x < 0 ||
+            y > canvas.height - GRID_SIZE ||
+            y < 0;
+        if (outOfBounds) {
+            console.log("You lost: OUT OF BOUNDS");
+        }
 
         const ctx = contextRef.current;
         if (ctx) {
@@ -54,10 +63,10 @@ export const Snake = () => {
             // const x = 50 * (frameCount * 0.01);
             ctx.fillRect(x, y, GRID_SIZE, GRID_SIZE);
         }
-    }, [contextRef, directionRef, positionRef]);
+    }, [contextRef, directionRef, positionRef, canvasRef]);
 
     useEffect(() => {
-        const intervalId = setInterval(render, 500);
+        const intervalId = setInterval(render, 100);
         return () => {
             clearInterval(intervalId);
         };
