@@ -1,15 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import styled from "styled-components";
 import { useCanvas } from "../../hooks/useCanvas";
+import { useDirection } from "../../hooks/useDirection";
 import { useGameLoop } from "../../hooks/useGameLoop";
-
-import { getDirectionFromKeyEvent } from "../../utils/dom";
 
 const CanvasLayout = styled.canvas`
     border: 1px solid purple;
 `;
-
-type DirectionType = "right" | "left" | "up" | "down";
 
 interface PositionType {
     x: number;
@@ -31,17 +28,16 @@ const DIRECTION_FACTORS = {
 
 export const Snake = () => {
     const [gameOver, setGameOver] = useState(false);
-    const directionRef = useRef<DirectionType>("right");
     const positionRef = useRef<PositionType>(START_POSITION);
     const snakeBodyRef = useRef<PositionType[]>([START_POSITION]);
-    const gameLoop = useRef<number>(null);
     const { canvasRef, contextRef } = useCanvas();
+    const directionRef = useDirection();
 
     const render = useCallback(() => {
-        const direction = directionRef.current;
         const canvas = canvasRef.current;
         const snakeBody = snakeBodyRef.current;
         const position = snakeBody[snakeBody.length - 1];
+        const direction = directionRef.current;
         const isHorizontal = direction === "right" || direction === "left";
         const x = isHorizontal
             ? position.x + GRID_SIZE * DIRECTION_FACTORS[direction]
@@ -79,19 +75,6 @@ export const Snake = () => {
     }, [contextRef, directionRef, positionRef, canvasRef]);
 
     useGameLoop(render, gameOver);
-
-    useEffect(() => {
-        const onKeyDown = (event: KeyboardEvent) => {
-            const dir = getDirectionFromKeyEvent(event);
-            if (dir) {
-                directionRef.current = dir;
-            }
-        };
-        document.addEventListener("keydown", onKeyDown);
-        return () => {
-            document.removeEventListener("keydown", onKeyDown);
-        };
-    }, []);
 
     return gameOver ? (
         <h1>Game Over</h1>
