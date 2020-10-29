@@ -1,16 +1,14 @@
 import { useEffect, useRef } from "react";
+import { DIRECTIONS, PositionType } from "../utils/canvas";
 
 import { getDirectionFromKeyEvent } from "../utils/dom";
 
-export type DirectionType = "right" | "left" | "up" | "down";
-
 export const useDirectionRef = () => {
-    const directionRef = useRef<DirectionType>("right");
+    const directionRef = useRef<PositionType>(DIRECTIONS.RIGHT);
     useEffect(() => {
         const onKeyDown = (event: KeyboardEvent) => {
             const dir = getDirectionFromKeyEvent(event);
             if (dir) {
-                console.log("direction", dir);
                 directionRef.current = dir;
             }
         };

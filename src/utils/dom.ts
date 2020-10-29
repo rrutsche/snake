@@ -1,16 +1,16 @@
-type DirectionType = "right" | "left" | "up" | "down";
+import { PositionType, DIRECTIONS } from "./canvas";
 
 export const getDirectionFromKeyEvent = (
     event: KeyboardEvent
-): DirectionType | void => {
+): PositionType | void => {
     switch (event.code) {
         case "ArrowRight":
-            return "right";
+            return DIRECTIONS.RIGHT;
         case "ArrowLeft":
-            return "left";
+            return DIRECTIONS.LEFT;
         case "ArrowUp":
-            return "up";
+            return DIRECTIONS.UP;
         case "ArrowDown":
-            return "down";
+            return DIRECTIONS.DOWN;
     }
 };

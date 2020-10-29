@@ -13,11 +13,11 @@ const BOARD_BORDER_COLOR = "black";
 const SNAKE_COLOR = "lightblue";
 const SNAKE_BORDER_COLOR = "darkblue";
 export type DirectionType = "right" | "left" | "up" | "down";
-const DIRECTION_FACTORS = {
-    right: 1,
-    left: -1,
-    up: -1,
-    down: 1,
+export const DIRECTIONS = {
+    RIGHT: { x: SEGMENT_SIZE, y: 0 },
+    LEFT: { x: -SEGMENT_SIZE, y: 0 },
+    UP: { x: 0, y: -SEGMENT_SIZE },
+    DOWN: { x: 0, y: SEGMENT_SIZE },
 };
 
 export const clearCanvas = (
@@ -62,16 +62,10 @@ export const getIsOutOfBounds = (
 
 export const getNextSnakePosition = (
     snake: PositionType[],
-    direction: DirectionType
+    direction: PositionType
 ): PositionType => {
     const position = snake[snake.length - 1];
-    const isHorizontal = direction === "right" || direction === "left";
-    const x = isHorizontal
-        ? position.x + SEGMENT_SIZE * DIRECTION_FACTORS[direction]
-        : position.x;
-    const y = !isHorizontal
-        ? position.y + SEGMENT_SIZE * DIRECTION_FACTORS[direction]
-        : position.y;
-
+    const x = position.x + direction.x;
+    const y = position.y + direction.y;
     return { x, y };
 };
