@@ -1,84 +1,95 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useCanvas } from "../../hooks/useCanvas";
-import { useDirection } from "../../hooks/useDirection";
+import { useDirectionRef } from "../../hooks/useDirectionRef";
 import { useGameLoop } from "../../hooks/useGameLoop";
 
+import {
+    drawSnake,
+    clearCanvas,
+    getIsOutOfBounds,
+    getNextSnakePosition,
+    PositionType,
+} from "../../utils/canvas";
+
 const CanvasLayout = styled.canvas`
-    border: 1px solid purple;
+    border: 1px solid black;
 `;
 
-interface PositionType {
-    x: number;
-    y: number;
-}
+const AREA_SIZE = 400;
 
-const GRID_SIZE = 10;
-const START_POSITION: PositionType = {
-    x: 50,
-    y: 50,
-};
-const DIRECTION_FACTORS = {
-    right: 1,
-    left: -1,
-    up: -1,
-    down: 1,
-};
+const snake: PositionType[] = [
+    { x: 200, y: 200 },
+    { x: 190, y: 200 },
+    { x: 180, y: 200 },
+];
 // https://thoughtbot.com/blog/html5-canvas-snake-game
+// https://www.educative.io/blog/javascript-snake-game-tutorial
 
 export const Snake = () => {
     const [gameOver, setGameOver] = useState(false);
-    const positionRef = useRef<PositionType>(START_POSITION);
-    const snakeBodyRef = useRef<PositionType[]>([START_POSITION]);
+    const snakeBodyRef = useRef<PositionType[]>(snake);
     const { canvasRef, contextRef } = useCanvas();
-    const directionRef = useDirection();
+    const directionRef = useDirectionRef();
 
-    const render = useCallback(() => {
+    // const makeFoodItem = useCallback(
+    //     (snakePosition: PositionType) => {
+    //         const { width, height } = canvasRef.current;
+    //         const snakeBody = snakeBodyRef.current;
+    //         const ctx = contextRef.current;
+    //         const suggestedPoint: PositionType = {
+    //             x: Math.floor(Math.random() * (width / GRID_SIZE)) * GRID_SIZE,
+    //             y: Math.floor(Math.random() * (height / GRID_SIZE)) * GRID_SIZE,
+    //         };
+    //         const isOccupiedBySnake = snakeBody.find((item) => {
+    //             return (
+    //                 item.x === suggestedPoint.x && item.y === suggestedPoint.y
+    //             );
+    //         });
+    //         if (isOccupiedBySnake) {
+    //             makeFoodItem(snakePosition);
+    //         } else {
+    //             ctx.fillStyle = "rgb(10,100,0)";
+    //             ctx.fillRect(
+    //                 suggestedPoint.x,
+    //                 suggestedPoint.y,
+    //                 GRID_SIZE,
+    //                 GRID_SIZE
+    //             );
+    //         }
+    //     },
+    //     [canvasRef, contextRef]
+    // );
+
+    const drawSnakeBody = useCallback(() => {
         const canvas = canvasRef.current;
         const snakeBody = snakeBodyRef.current;
-        const position = snakeBody[snakeBody.length - 1];
         const direction = directionRef.current;
-        const isHorizontal = direction === "right" || direction === "left";
-        const x = isHorizontal
-            ? position.x + GRID_SIZE * DIRECTION_FACTORS[direction]
-            : position.x;
-        const y = !isHorizontal
-            ? position.y + GRID_SIZE * DIRECTION_FACTORS[direction]
-            : position.y;
+        const nextPosition = getNextSnakePosition(snakeBody, direction);
+        snakeBody.push(nextPosition);
 
-        snakeBody.push({ x, y });
-        positionRef.current = { x, y };
-        const outOfBounds =
-            x > canvas.width - GRID_SIZE ||
-            x < 0 ||
-            y > canvas.height - GRID_SIZE ||
-            y < 0;
-
-        if (outOfBounds) {
+        if (getIsOutOfBounds(nextPosition, canvas)) {
             setGameOver(true);
         }
 
-        const ctx = contextRef.current;
-        if (ctx) {
-            ctx.fillStyle = "rgb(0,0,0)";
-            ctx.fillRect(x, y, GRID_SIZE, GRID_SIZE);
-            if (snakeBody.length > 3) {
-                const itemToRemove = snakeBody.shift();
-                ctx.clearRect(
-                    itemToRemove.x,
-                    itemToRemove.y,
-                    GRID_SIZE,
-                    GRID_SIZE
-                );
-            }
+        if (snakeBody.length > 3) {
+            snakeBody.shift();
         }
-    }, [contextRef, directionRef, positionRef, canvasRef]);
 
-    useGameLoop(render, gameOver);
+        const ctx = contextRef.current;
+        clearCanvas(ctx, canvas);
+        drawSnake(ctx, snakeBody);
+
+        // makeFoodItem(position);
+
+        // if (position.x == suggestedPoint[0] &amp;&amp; currentPosition['y'] == suggestedPoint[1])
+    }, [contextRef, directionRef, canvasRef]);
+
+    useGameLoop(drawSnakeBody, gameOver);
 
     return gameOver ? (
         <h1>Game Over</h1>
     ) : (
-        <CanvasLayout width={800} height={500} ref={canvasRef} />
+        <CanvasLayout width={AREA_SIZE} height={AREA_SIZE} ref={canvasRef} />
     );
 };

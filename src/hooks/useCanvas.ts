@@ -1,17 +1,8 @@
 import { useRef, useEffect } from "react";
 
-export type DrawFunctionType = (
-    ctx: CanvasRenderingContext2D,
-    frameCount: number
-) => void;
-
-export interface CanvasOptions {
-    context?: string;
-}
-
 export const useCanvas = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const contextRef = useRef(null);
+    const contextRef = useRef<CanvasRenderingContext2D>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;

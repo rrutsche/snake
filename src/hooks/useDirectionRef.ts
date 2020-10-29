@@ -2,9 +2,9 @@ import { useEffect, useRef } from "react";
 
 import { getDirectionFromKeyEvent } from "../utils/dom";
 
-type DirectionType = "right" | "left" | "up" | "down";
+export type DirectionType = "right" | "left" | "up" | "down";
 
-export const useDirection = () => {
+export const useDirectionRef = () => {
     const directionRef = useRef<DirectionType>("right");
     useEffect(() => {
         const onKeyDown = (event: KeyboardEvent) => {
