@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import styled from "styled-components";
 import { useCanvas } from "../../hooks/useCanvas";
 import { useDirectionRef } from "../../hooks/useDirectionRef";
@@ -8,9 +8,13 @@ import {
     drawSnake,
     clearCanvas,
     getHasGameEnded,
-    getNextSnakePosition,
+    getNextSnakeHeadPosition,
     PositionType,
-} from "../../utils/canvas";
+    SEGMENT_SIZE,
+    getFoodWasEaten,
+    generateFood,
+    drawFood,
+} from "../../utils/snake";
 
 const CanvasLayout = styled.canvas`
     border: 1px solid black;
@@ -38,43 +42,53 @@ export const Snake = () => {
     const snakeBodyRef = useRef<PositionType[]>(snake);
     const { canvasRef, contextRef } = useCanvas();
     const directionRef = useDirectionRef();
+    const [food, setFood] = useState<PositionType>(null);
 
-    // const makeFoodItem = useCallback(
-    //     (snakePosition: PositionType) => {
-    //         const { width, height } = canvasRef.current;
-    //         const snakeBody = snakeBodyRef.current;
-    //         const ctx = contextRef.current;
-    //         const suggestedPoint: PositionType = {
-    //             x: Math.floor(Math.random() * (width / GRID_SIZE)) * GRID_SIZE,
-    //             y: Math.floor(Math.random() * (height / GRID_SIZE)) * GRID_SIZE,
-    //         };
-    //         const isOccupiedBySnake = snakeBody.find((item) => {
-    //             return (
-    //                 item.x === suggestedPoint.x && item.y === suggestedPoint.y
-    //             );
-    //         });
-    //         if (isOccupiedBySnake) {
-    //             makeFoodItem(snakePosition);
-    //         } else {
-    //             ctx.fillStyle = "rgb(10,100,0)";
-    //             ctx.fillRect(
-    //                 suggestedPoint.x,
-    //                 suggestedPoint.y,
-    //                 GRID_SIZE,
-    //                 GRID_SIZE
-    //             );
-    //         }
-    //     },
-    //     [canvasRef, contextRef]
-    // );
+    const makeFoodItem = useCallback(
+        (snakePosition: PositionType) => {
+            const { width, height } = canvasRef.current;
+            const snakeBody = snakeBodyRef.current;
+            const ctx = contextRef.current;
+            const suggestedPoint: PositionType = {
+                x:
+                    Math.floor(Math.random() * (width / SEGMENT_SIZE)) *
+                    SEGMENT_SIZE,
+                y:
+                    Math.floor(Math.random() * (height / SEGMENT_SIZE)) *
+                    SEGMENT_SIZE,
+            };
+            const isOccupiedBySnake = snakeBody.find((item) => {
+                return (
+                    item.x === suggestedPoint.x && item.y === suggestedPoint.y
+                );
+            });
+            if (isOccupiedBySnake) {
+                makeFoodItem(snakePosition);
+            } else {
+                ctx.fillStyle = "rgb(10,100,0)";
+                ctx.fillRect(
+                    suggestedPoint.x,
+                    suggestedPoint.y,
+                    SEGMENT_SIZE,
+                    SEGMENT_SIZE
+                );
+            }
+        },
+        [canvasRef, contextRef]
+    );
 
     const drawSnakeBody = useCallback(() => {
         const canvas = canvasRef.current;
         const snakeBody = snakeBodyRef.current;
         const direction = directionRef.current;
-        const nextPosition = getNextSnakePosition(snakeBody, direction);
-        snakeBody.push(nextPosition);
-        if (snakeBody.length > 3) {
+        const snakeHead = getNextSnakeHeadPosition(snakeBody, direction);
+        snakeBody.push(snakeHead);
+
+        const foodWasEaten = getFoodWasEaten(snakeBody, food);
+
+        if (!food || foodWasEaten) {
+            setFood(generateFood(canvas));
+        } else {
             snakeBody.shift();
         }
 
@@ -85,11 +99,8 @@ export const Snake = () => {
         const ctx = contextRef.current;
         clearCanvas(ctx, canvas);
         drawSnake(ctx, snakeBody);
-
-        // makeFoodItem(position);
-
-        // if (position.x == suggestedPoint[0] &amp;&amp; currentPosition['y'] == suggestedPoint[1])
-    }, [contextRef, directionRef, canvasRef]);
+        drawFood(contextRef.current, food);
+    }, [contextRef, directionRef, canvasRef, food]);
 
     useGameLoop(drawSnakeBody, gameOver);
 

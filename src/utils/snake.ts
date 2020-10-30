@@ -7,11 +7,13 @@ export interface PositionType {
     x: number;
     y: number;
 }
-const SEGMENT_SIZE = 10;
+export const SEGMENT_SIZE = 10;
 const BOARD_BACKGROUND_COLOR = "white";
 const BOARD_BORDER_COLOR = "black";
 const SNAKE_COLOR = "lightblue";
 const SNAKE_BORDER_COLOR = "darkblue";
+const FOOD_COLOR = "lightgreen";
+const FOOD_BORDER_COLOR = "darkgreen";
 export const DIRECTIONS = {
     RIGHT: { x: SEGMENT_SIZE, y: 0 },
     LEFT: { x: -SEGMENT_SIZE, y: 0 },
@@ -67,7 +69,7 @@ export const getHasGameEnded = (
     );
 };
 
-export const getNextSnakePosition = (
+export const getNextSnakeHeadPosition = (
     snake: PositionType[],
     direction: PositionType
 ): PositionType => {
@@ -75,4 +77,35 @@ export const getNextSnakePosition = (
     const x = position.x + direction.x;
     const y = position.y + direction.y;
     return { x, y };
+};
+
+export const drawFood = (
+    ctx: CanvasRenderingContext2D,
+    food?: PositionType
+) => {
+    if (!food) {
+        return;
+    }
+    ctx.fillStyle = FOOD_COLOR;
+    ctx.strokeStyle = FOOD_BORDER_COLOR;
+    ctx.fillRect(food.x, food.y, SEGMENT_SIZE, SEGMENT_SIZE);
+    ctx.strokeRect(food.x, food.y, SEGMENT_SIZE, SEGMENT_SIZE);
+};
+
+export const getFoodWasEaten = (snake: PositionType[], food?: PositionType) => {
+    if (!food) {
+        return false;
+    }
+    return !!snake.find((item) => {
+        return item.x === food.x && item.y === food.y;
+    });
+};
+
+export const generateFood = (options: CanvasOptions) => {
+    const { width, height } = options;
+    const food: PositionType = {
+        x: Math.floor(Math.random() * (width / SEGMENT_SIZE)) * SEGMENT_SIZE,
+        y: Math.floor(Math.random() * (height / SEGMENT_SIZE)) * SEGMENT_SIZE,
+    };
+    return food;
 };

@@ -1,4 +1,4 @@
-import { PositionType, DIRECTIONS } from "./canvas";
+import { PositionType, DIRECTIONS } from "./snake";
 
 export const getDirectionFromKeyEvent = (
     event: KeyboardEvent

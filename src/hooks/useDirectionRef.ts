@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { DIRECTIONS, PositionType } from "../utils/canvas";
+import { DIRECTIONS, PositionType } from "../utils/snake";
 
 import { getDirectionFromKeyEvent } from "../utils/dom";
 
