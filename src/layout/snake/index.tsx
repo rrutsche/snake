@@ -44,39 +44,6 @@ export const Snake = () => {
     const directionRef = useDirectionRef();
     const [food, setFood] = useState<PositionType>(null);
 
-    const makeFoodItem = useCallback(
-        (snakePosition: PositionType) => {
-            const { width, height } = canvasRef.current;
-            const snakeBody = snakeBodyRef.current;
-            const ctx = contextRef.current;
-            const suggestedPoint: PositionType = {
-                x:
-                    Math.floor(Math.random() * (width / SEGMENT_SIZE)) *
-                    SEGMENT_SIZE,
-                y:
-                    Math.floor(Math.random() * (height / SEGMENT_SIZE)) *
-                    SEGMENT_SIZE,
-            };
-            const isOccupiedBySnake = snakeBody.find((item) => {
-                return (
-                    item.x === suggestedPoint.x && item.y === suggestedPoint.y
-                );
-            });
-            if (isOccupiedBySnake) {
-                makeFoodItem(snakePosition);
-            } else {
-                ctx.fillStyle = "rgb(10,100,0)";
-                ctx.fillRect(
-                    suggestedPoint.x,
-                    suggestedPoint.y,
-                    SEGMENT_SIZE,
-                    SEGMENT_SIZE
-                );
-            }
-        },
-        [canvasRef, contextRef]
-    );
-
     const drawSnakeBody = useCallback(() => {
         const canvas = canvasRef.current;
         const snakeBody = snakeBodyRef.current;
