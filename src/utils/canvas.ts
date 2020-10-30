@@ -12,7 +12,6 @@ const BOARD_BACKGROUND_COLOR = "white";
 const BOARD_BORDER_COLOR = "black";
 const SNAKE_COLOR = "lightblue";
 const SNAKE_BORDER_COLOR = "darkblue";
-export type DirectionType = "right" | "left" | "up" | "down";
 export const DIRECTIONS = {
     RIGHT: { x: SEGMENT_SIZE, y: 0 },
     LEFT: { x: -SEGMENT_SIZE, y: 0 },
@@ -48,15 +47,23 @@ export const drawSnake = (
     snake.forEach((part) => drawSnakePart(ctx, part));
 };
 
-export const getIsOutOfBounds = (
-    position: PositionType,
+export const getHasGameEnded = (
+    snake: PositionType[],
     options: CanvasOptions
 ) => {
+    const snakeHead = snake[snake.length - 1];
+    const snakeHitItself = snake.find(
+        (segment, index) =>
+            index !== snake.length - 1 &&
+            segment.x === snakeHead.x &&
+            segment.y === snakeHead.y
+    );
     return (
-        position.x > options.width - SEGMENT_SIZE ||
-        position.x < 0 ||
-        position.y > options.height - SEGMENT_SIZE ||
-        position.y < 0
+        snakeHitItself ||
+        snakeHead.x > options.width - SEGMENT_SIZE ||
+        snakeHead.x < 0 ||
+        snakeHead.y > options.height - SEGMENT_SIZE ||
+        snakeHead.y < 0
     );
 };
 

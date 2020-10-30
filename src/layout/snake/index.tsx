@@ -7,7 +7,7 @@ import { useGameLoop } from "../../hooks/useGameLoop";
 import {
     drawSnake,
     clearCanvas,
-    getIsOutOfBounds,
+    getHasGameEnded,
     getNextSnakePosition,
     PositionType,
 } from "../../utils/canvas";
@@ -19,9 +19,16 @@ const CanvasLayout = styled.canvas`
 const AREA_SIZE = 400;
 
 const snake: PositionType[] = [
-    { x: 200, y: 200 },
-    { x: 190, y: 200 },
+    { x: 110, y: 200 },
+    { x: 120, y: 200 },
+    { x: 130, y: 200 },
+    { x: 140, y: 200 },
+    { x: 150, y: 200 },
+    { x: 160, y: 200 },
+    { x: 170, y: 200 },
     { x: 180, y: 200 },
+    { x: 190, y: 200 },
+    { x: 200, y: 200 },
 ];
 // https://thoughtbot.com/blog/html5-canvas-snake-game
 // https://www.educative.io/blog/javascript-snake-game-tutorial
@@ -67,13 +74,12 @@ export const Snake = () => {
         const direction = directionRef.current;
         const nextPosition = getNextSnakePosition(snakeBody, direction);
         snakeBody.push(nextPosition);
-
-        if (getIsOutOfBounds(nextPosition, canvas)) {
-            setGameOver(true);
-        }
-
         if (snakeBody.length > 3) {
             snakeBody.shift();
+        }
+
+        if (getHasGameEnded(snakeBody, canvas)) {
+            setGameOver(true);
         }
 
         const ctx = contextRef.current;
