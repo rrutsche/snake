@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import styled from "styled-components";
+
 import { useCanvas } from "../../hooks/useCanvas";
 import { useDirectionRef } from "../../hooks/useDirectionRef";
 import { useGameLoop } from "../../hooks/useGameLoop";
@@ -10,15 +10,11 @@ import {
     getHasGameEnded,
     getNextSnakeHeadPosition,
     PositionType,
-    SEGMENT_SIZE,
     getFoodWasEaten,
     generateFood,
     drawFood,
 } from "../../utils/snake";
-
-const CanvasLayout = styled.canvas`
-    border: 1px solid black;
-`;
+import { CanvasLayout, GameOverContainer, SnakeContainer } from "./styled";
 
 const AREA_SIZE = 400;
 
@@ -71,9 +67,18 @@ export const Snake = () => {
 
     useGameLoop(drawSnakeBody, gameOver);
 
-    return gameOver ? (
-        <h1>Game Over</h1>
-    ) : (
-        <CanvasLayout width={AREA_SIZE} height={AREA_SIZE} ref={canvasRef} />
+    return (
+        <SnakeContainer>
+            {gameOver ? (
+                <GameOverContainer>
+                    <h2>Game Over</h2>
+                </GameOverContainer>
+            ) : undefined}
+            <CanvasLayout
+                width={AREA_SIZE}
+                height={AREA_SIZE}
+                ref={canvasRef}
+            />
+        </SnakeContainer>
     );
 };
