@@ -61,8 +61,8 @@ export const Snake = () => {
 
         const ctx = contextRef.current;
         clearCanvas(ctx, canvas);
-        drawSnake(ctx, snakeBody);
         drawFood(contextRef.current, food);
+        drawSnake(ctx, snakeBody);
     }, [contextRef, directionRef, canvasRef, food]);
 
     useGameLoop(drawSnakeBody, gameOver);
