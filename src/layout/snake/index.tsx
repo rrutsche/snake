@@ -39,6 +39,7 @@ export const Snake = () => {
     const { canvasRef, contextRef } = useCanvas();
     const directionRef = useDirectionRef();
     const [food, setFood] = useState<PositionType>(null);
+    const [score, setScore] = useState(0);
 
     const drawSnakeBody = useCallback(() => {
         const canvas = canvasRef.current;
@@ -51,6 +52,7 @@ export const Snake = () => {
 
         if (!food || foodWasEaten) {
             setFood(generateFood(canvas));
+            setScore(score + 1);
         } else {
             snakeBody.shift();
         }
@@ -63,12 +65,13 @@ export const Snake = () => {
         clearCanvas(ctx, canvas);
         drawFood(contextRef.current, food);
         drawSnake(ctx, snakeBody);
-    }, [contextRef, directionRef, canvasRef, food]);
+    }, [contextRef, directionRef, canvasRef, food, score]);
 
     useGameLoop(drawSnakeBody, gameOver);
 
     return (
         <SnakeContainer>
+            <h1>Snake 🐍</h1>
             {gameOver ? (
                 <GameOverContainer>
                     <h2>Game Over</h2>
@@ -79,6 +82,7 @@ export const Snake = () => {
                 height={AREA_SIZE}
                 ref={canvasRef}
             />
+            <div>Score: {score}</div>
         </SnakeContainer>
     );
 };
