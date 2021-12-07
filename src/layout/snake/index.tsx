@@ -40,7 +40,7 @@ export const Snake = () => {
     const directionRef = useDirectionRef();
     const [food, setFood] = useState<PositionType>(null);
     const [score, setScore] = useState(0);
-
+    //  https://learningsolutionsmag.com/articles/coding-sound-with-javascript-beginner-s-guide
     const drawSnakeBody = useCallback(() => {
         const canvas = canvasRef.current;
         const snakeBody = snakeBodyRef.current;
